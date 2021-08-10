@@ -1,0 +1,97 @@
+#!/bin/bash
+# nest-desktop-singularity
+
+FAKEROOT=false
+SERVICES="nest-desktop nest-simulator"
+
+usage() {
+  echo "NEST Desktop Singularity"
+  echo "------------------------"
+  echo "Usage: nest-desktop-singularity build|list|restart|start|status|stop [-f] [nest-desktop|nest-simulator]"
+  echo ""
+  echo "Commands:"
+  echo "  build       build singularity containers for NEST Desktop and NEST Simulator"
+  echo "  list        list services for NEST Desktop and NEST Simulator"
+  echo "  restart     restart (i.e. stop and start) instances"
+  echo "  status      display the status of singularity instances NEST Desktop and NEST Simulator"
+  echo "  start       start instances of NEST Desktop and NEST Simulator"
+  echo "  stop        stop instances of NEST Desktop and NEST Simulator"
+  echo
+  echo "Options:"
+  echo "  -f          use fakeroot for building" >&2; exit 1
+
+}
+
+_build_fakeroot() {
+  singularity build --fakeroot images/$1.sif recipes/$1.def
+}
+
+_build_root() {
+  sudo singularity build images/$1.sif recipes/$1.def
+}
+
+build() {
+  if [[ FAKEROOT ]]; then
+    for SERVICE in $SERVICES ; do
+      _build_fakeroot $SERVICE
+    done
+  else
+    for SERVICE in $SERVICES ; do
+      _build_root $SERVICE
+    done
+  fi
+}
+
+list() {
+  for SERVICE in $SERVICES ; do
+    echo $SERVICE
+  done
+}
+
+_start() {
+  singularity instance start images/$1.sif $1
+}
+
+start() {
+  for SERVICE in $SERVICES ; do
+    _start $SERVICE
+  done
+}
+
+status() {
+  singularity instance list
+}
+
+_stop() {
+  singularity instance stop $1
+}
+
+stop() {
+  for SERVICE in $SERVICES ; do
+    _stop $SERVICE
+  done
+}
+
+CMD=$1; shift
+while getopts "f:" flag; do
+  case ${flag} in
+    f) FAKEROOT=true ;;
+  esac
+done
+
+for arg in "$@"; do
+  case ${arg} in
+    nest-desktop) SERVICES='nest-desktop' ;;
+    nest-simulator) SERVICES='nest-simulator' ;;
+  esac
+done
+
+case "$CMD" in
+  build)   build ;;
+  list)    list ;;
+  restart) stop; sleep .5; start ;;
+  start)   start ;;
+  status)  status ;;
+  stop)    stop ;;
+  *)       usage ;;
+esac

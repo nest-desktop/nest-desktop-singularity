@@ -1,0 +1,14 @@
+Bootstrap: docker
+From: python:3.7-alpine
+
+%labels
+  Author Sebastian Spreizer <spreizer@web.de>
+
+%post
+  python3 -m pip install -q nest-desktop --upgrade
+
+%runscript
+  python3 -m nest_desktop.app
+
+%startscript
+  python3 -m nest_desktop.app

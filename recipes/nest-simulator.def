@@ -1,0 +1,16 @@
+Bootstrap: docker
+From: nestsim/nest:latest
+
+%labels
+  Author Sebastian Spreizer <spreizer@web.de>
+
+%environment
+  NEST_SERVER_MODULES=nest,numpy
+  NEST_SERVER_RESTRICTION_OFF=true
+  . /opt/nest/bin/nest_vars.sh
+
+%runscript
+  uwsgi --module nest.server:app --buffer-size 65535 --http-socket 0.0.0.0:5000
+
+%startscript
+  uwsgi --module nest.server:app --buffer-size 65535 --http-socket 0.0.0.0:5000

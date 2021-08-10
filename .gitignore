@@ -1,0 +1,4 @@
+*.sif
+
+etc.hosts
+resolv.conf
