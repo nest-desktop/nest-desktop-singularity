@@ -2,7 +2,7 @@
 # nest-desktop-singularity
 
 FAKEROOT=false
-SERVICES="nest-desktop nest-simulator"
+INSTANCES="nest-desktop nest-simulator"
 
 usage() {
   echo "NEST Desktop Singularity"
@@ -10,12 +10,12 @@ usage() {
   echo "Usage: nest-desktop-singularity build|list|restart|start|status|stop [-f] [nest-desktop|nest-simulator]"
   echo ""
   echo "Commands:"
-  echo "  build       build singularity containers for NEST Desktop and NEST Simulator"
-  echo "  list        list services for NEST Desktop and NEST Simulator"
+  echo "  build       build singularity containers for instances"
+  echo "  list        list instances"
   echo "  restart     restart (i.e. stop and start) instances"
-  echo "  status      display the status of singularity instances NEST Desktop and NEST Simulator"
-  echo "  start       start instances of NEST Desktop and NEST Simulator"
-  echo "  stop        stop instances of NEST Desktop and NEST Simulator"
+  echo "  status      display the status of instances"
+  echo "  start       start instances"
+  echo "  stop        stop instances"
   echo
   echo "Options:"
   echo "  -f          use fakeroot for building" >&2; exit 1
@@ -32,19 +32,19 @@ _build_root() {
 
 build() {
   if [[ FAKEROOT ]]; then
-    for SERVICE in $SERVICES ; do
-      _build_fakeroot $SERVICE
+    for INSTANCE in $INSTANCES ; do
+      _build_fakeroot $INSTANCE
     done
   else
-    for SERVICE in $SERVICES ; do
-      _build_root $SERVICE
+    for INSTANCE in $INSTANCES ; do
+      _build_root $INSTANCE
     done
   fi
 }
 
 list() {
-  for SERVICE in $SERVICES ; do
-    echo $SERVICE
+  for INSTANCE in $INSTANCES ; do
+    echo $INSTANCE
   done
 }
 
@@ -53,8 +53,8 @@ _start() {
 }
 
 start() {
-  for SERVICE in $SERVICES ; do
-    _start $SERVICE
+  for INSTANCE in $INSTANCES ; do
+    _start $INSTANCE
   done
 }
 
@@ -67,8 +67,8 @@ _stop() {
 }
 
 stop() {
-  for SERVICE in $SERVICES ; do
-    _stop $SERVICE
+  for INSTANCE in $INSTANCES ; do
+    _stop $INSTANCE
   done
 }
 
@@ -81,8 +81,8 @@ done
 
 for arg in "$@"; do
   case ${arg} in
-    nest-desktop) SERVICES='nest-desktop' ;;
-    nest-simulator) SERVICES='nest-simulator' ;;
+    nest-desktop) INSTANCES='nest-desktop' ;;
+    nest-simulator) INSTANCES='nest-simulator' ;;
   esac
 done
 
